@@ -32,6 +32,11 @@ export function middleware(request) {
   }
 
   if (!token || token !== API_KEY) {
+    console.log(`[MIDDLEWARE] Unauthorized access attempt to ${url.pathname}`)
+    console.log(`[MIDDLEWARE] Authorization header: ${authHeader ? 'present' : 'missing'}`)
+    console.log(`[MIDDLEWARE] x-api-key header: ${apiKeyHeader ? 'present' : 'missing'}`)
+    console.log(`[MIDDLEWARE] Provided token: ${token ? 'present' : 'empty'}`)
+
     const res = NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
     addCorsHeaders(res)
     return res
