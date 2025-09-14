@@ -1379,6 +1379,142 @@
         "properties": {
           "report": { "$ref": "#/components/schemas/Report" }
         }
+      },
+      "BookingRequestACS": {
+        "type": "object",
+        "properties": {
+          "quoteId": {
+            "type": "string",
+            "description": "Reference to the quotation",
+            "example": "QUO-20250115-001"
+          },
+          "awbNumber": {
+            "type": "string",
+            "description": "Air Waybill number",
+            "example": "020-12345001"
+          },
+          "flightDetails": {
+            "type": "object",
+            "properties": {
+              "flightNumber": {
+                "type": "string",
+                "description": "Flight number",
+                "example": "PK-751"
+              },
+              "date": {
+                "type": "string",
+                "format": "date",
+                "description": "Flight date",
+                "example": "2025-01-20"
+              }
+            },
+            "required": ["flightNumber", "date"]
+          },
+          "validityDuration": {
+            "type": "string",
+            "description": "Booking validity duration",
+            "example": "48 hours"
+          }
+        },
+        "required": ["quoteId"]
+      },
+      "BookingResponseACS": {
+        "type": "object",
+        "properties": {
+          "bookingId": {
+            "type": "string",
+            "description": "Unique booking identifier",
+            "example": "BKG-20250115-001"
+          },
+          "awbNumber": {
+            "type": "string",
+            "description": "Air Waybill number",
+            "example": "020-12345001"
+          },
+          "status": {
+            "type": "string",
+            "description": "Booking status",
+            "enum": ["CONFIRMED", "PENDING", "CANCELLED"],
+            "example": "CONFIRMED"
+          },
+          "flightDetails": {
+            "type": "object",
+            "properties": {
+              "flightNumber": {
+                "type": "string",
+                "description": "Flight number",
+                "example": "PK-751"
+              },
+              "date": {
+                "type": "string",
+                "format": "date",
+                "description": "Flight date",
+                "example": "2025-01-20"
+              },
+              "departureTime": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Departure time",
+                "example": "2025-01-20T10:30:00Z"
+              }
+            },
+            "required": ["flightNumber", "date", "departureTime"]
+          },
+          "shipment": {
+            "type": "object",
+            "properties": {
+              "origin": {
+                "type": "string",
+                "description": "Origin airport code",
+                "example": "KHI"
+              },
+              "destination": {
+                "type": "string",
+                "description": "Destination airport code",
+                "example": "LHR"
+              },
+              "pieces": {
+                "type": "integer",
+                "description": "Number of pieces",
+                "example": 5
+              },
+              "weight": {
+                "type": "number",
+                "description": "Weight in kg",
+                "example": 250.5
+              },
+              "commodity": {
+                "type": "string",
+                "description": "Commodity description",
+                "example": "Electronics"
+              }
+            },
+            "required": ["origin", "destination", "pieces", "weight", "commodity"]
+          },
+          "validUntil": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Booking validity end time",
+            "example": "2025-01-22T10:30:00Z"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Booking creation timestamp",
+            "example": "2025-01-15T17:00:00Z"
+          },
+          "quoteId": {
+            "type": "string",
+            "description": "Reference to the quotation",
+            "example": "QUO-20250115-001"
+          },
+          "validityDuration": {
+            "type": "string",
+            "description": "Booking validity duration",
+            "example": "48 hours"
+          }
+        },
+        "required": ["bookingId", "awbNumber", "status", "flightDetails", "shipment", "validUntil", "createdAt"]
       }
     }
   }
