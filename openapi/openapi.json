@@ -3,7 +3,7 @@
   "info": {
     "title": "Mock API",
     "version": "1.0.0",
-    "description": "Mock OpenAPI spec for QR API Service"
+    "description": "Mock OpenAPI spec for QR API Service. All endpoints require API key authentication via 'Authorization: Bearer <token>' or 'x-api-key: <token>' headers."
   },
   "servers": [
     {
@@ -15,12 +15,34 @@
       "description": "Production server"
     }
   ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    },
+    {
+      "ApiKeyHeader": []
+    }
+  ],
   "tags": [
     { "name": "qr-exp-cgo-ext-availability-v1", "description": "Availability service" },
     { "name": "qr-exp-cgo-ext-booking-v1", "description": "Booking service" },
     { "name": "qr-exp-cgo-ext-flight-schedules-v1", "description": "Flight schedules service" },
     { "name": "qr-exp-cgo-shipments-v1", "description": "Shipments service" },
-    { "name": "qr-exp-cgo-stock-v1", "description": "Stock service" }
+    { "name": "qr-exp-cgo-stock-v1", "description": "Stock service" },
+    { "name": "qr-exp-cgo-tables-v1", "description": "Table data service" },
+    { "name": "acs-awb-stock-v1", "description": "AWB Stock Management" },
+    { "name": "acs-flight-schedules-v1", "description": "Flight Schedule and Capacity" },
+    { "name": "acs-quotations-v1", "description": "Quotation and Booking" },
+    { "name": "acs-asi-v1", "description": "Advanced Shipment Information" },
+    { "name": "acs-truck-slots-v1", "description": "Truck Slot Management" },
+    { "name": "acs-hawb-v1", "description": "HAWB/MAWB Management" },
+    { "name": "acs-dangerous-goods-v1", "description": "Dangerous Goods Declaration" },
+    { "name": "acs-cargo-acceptance-v1", "description": "Cargo Acceptance" },
+    { "name": "acs-placi-v1", "description": "PLACI Management" },
+    { "name": "acs-flight-manifest-v1", "description": "Flight Manifest" },
+    { "name": "acs-status-updates-v1", "description": "Status Updates" },
+    { "name": "acs-payments-v1", "description": "Payment Gateway" },
+    { "name": "acs-digital-pouch-v1", "description": "Digital Pouch" }
   ],
   "paths": {
     "/api/status": {
@@ -121,8 +143,7 @@
           "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
         }
       }
-    }
-    ,
+    },
     "/api/flight-schedules/daily": {
       "post": {
   "tags": ["qr-exp-cgo-ext-flight-schedules-v1"],
@@ -180,9 +201,778 @@
         "responses": { "200": { "description": "Stock response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StockResponse" } } } },
         "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }}
       } 
+    },
+    "/api/awb-stock/request": {
+      "post": {
+        "tags": ["acs-awb-stock-v1"],
+        "summary": "Request AWB Stock",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AWBStockRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "AWB stock request created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AWBStockRequestResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/awb-stock/reply/{requestId}": {
+      "put": {
+        "tags": ["acs-awb-stock-v1"],
+        "summary": "Reply to AWB Stock Request",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AWBStockReply" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "AWB stock reply processed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AWBStockReplyResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/flights/schedule": {
+      "post": {
+        "tags": ["acs-flight-schedules-v1"],
+        "summary": "Submit Flight Schedule",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/FlightScheduleRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Flight schedule submitted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FlightScheduleResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/flights/{flightNumber}/capacity": {
+      "get": {
+        "tags": ["acs-flight-schedules-v1"],
+        "summary": "Get Flight Capacity",
+        "parameters": [
+          {
+            "name": "flightNumber",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "schema": { "type": "string", "format": "date" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flight capacity information",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FlightCapacityResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quotes/request": {
+      "post": {
+        "tags": ["acs-quotations-v1"],
+        "summary": "Request Quote",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/QuoteRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Quote generated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/QuoteResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bookings": {
+      "post": {
+        "tags": ["acs-quotations-v1"],
+        "summary": "Create Booking",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BookingRequestACS" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BookingResponseACS" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asi": {
+      "post": {
+        "tags": ["acs-asi-v1"],
+        "summary": "Send ASI",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ASISendRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ASI sent successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ASISendResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/truck-slots/request": {
+      "post": {
+        "tags": ["acs-truck-slots-v1"],
+        "summary": "Request Truck Slot",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TruckSlotRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Truck slot requested",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TruckSlotResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hawb": {
+      "post": {
+        "tags": ["acs-hawb-v1"],
+        "summary": "Create HAWB",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/HAWBCreateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "HAWB created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HAWBCreateResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dangerous-goods": {
+      "post": {
+        "tags": ["acs-dangerous-goods-v1"],
+        "summary": "Submit e-DGD",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DangerousGoodsRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Dangerous goods declaration submitted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DangerousGoodsResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cargo-acceptance": {
+      "post": {
+        "tags": ["acs-cargo-acceptance-v1"],
+        "summary": "Submit Cargo Acceptance",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CargoAcceptanceRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cargo acceptance submitted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CargoAcceptanceResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/placi": {
+      "post": {
+        "tags": ["acs-placi-v1"],
+        "summary": "Submit PLACI",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PLACIRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "PLACI submitted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PLACIResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/placi/{placiId}/risk-assessment": {
+      "get": {
+        "tags": ["acs-placi-v1"],
+        "summary": "Get PLACI Risk Assessment",
+        "parameters": [
+          {
+            "name": "placiId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Risk assessment results",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PLACIRiskAssessmentResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/flight-manifest": {
+      "post": {
+        "tags": ["acs-flight-manifest-v1"],
+        "summary": "Submit Flight Manifest",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/FlightManifestRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Flight manifest submitted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FlightManifestResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/status-updates": {
+      "post": {
+        "tags": ["acs-status-updates-v1"],
+        "summary": "Send Status Update (FSU)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/StatusUpdateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status update sent",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/StatusUpdateResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payments": {
+      "post": {
+        "tags": ["acs-payments-v1"],
+        "summary": "Process Payment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PaymentRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment processed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PaymentResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/digital-pouch": {
+      "post": {
+        "tags": ["acs-digital-pouch-v1"],
+        "summary": "Create Digital Pouch",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DigitalPouchRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Digital pouch created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DigitalPouchResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/flight-table": {
+      "get": {
+        "tags": ["qr-exp-cgo-tables-v1"],
+        "summary": "Get flight table data",
+        "responses": {
+          "200": {
+            "description": "Flight table data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FlightTableResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/airway-bill-table": {
+      "get": {
+        "tags": ["qr-exp-cgo-tables-v1"],
+        "summary": "Get airway bill table data",
+        "responses": {
+          "200": {
+            "description": "Airway bill table data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirwayBillTableResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/report": {
+      "get": {
+        "tags": ["qr-exp-cgo-tables-v1"],
+        "summary": "Get report data",
+        "responses": {
+          "200": {
+            "description": "Report data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "API key authentication. Use 'Bearer <token>' or 'x-api-key' header."
+      },
+      "ApiKeyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Alternative API key header."
+      }
+    },
     "schemas": {
       "StatusResponse": {
         "type": "object",
@@ -428,6 +1218,166 @@
               }
             }
           }
+        }
+      },
+      "Flight": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "flight": { "type": "string" },
+          "date": { "type": "string", "format": "date" },
+          "origin": { "type": "string" },
+          "departureTime": { "type": "string" },
+          "destination": { "type": "string" },
+          "arrivalTime": { "type": "string" },
+          "weight": { "type": "number" },
+          "volume": { "type": "number" },
+          "status": { "type": "string" },
+          "baseRate": { "type": "number" },
+          "outputRate": { "type": "number" },
+          "tailNumber": { "type": "string" },
+          "manufacturer": { "type": "string" },
+          "aircraftType": { "type": "string" },
+          "maxWeight": { "type": "number" },
+          "maxVolume": { "type": "number" }
+        },
+        "required": ["id", "flight", "date", "origin", "departureTime", "destination", "arrivalTime", "weight", "volume", "status", "baseRate", "outputRate", "tailNumber", "manufacturer", "aircraftType", "maxWeight", "maxVolume"]
+      },
+      "FlightTableResponse": {
+        "type": "object",
+        "properties": {
+          "flights": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Flight" }
+          }
+        }
+      },
+      "AirwayBill": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "awbNumber": { "type": "string" },
+          "pieces": { "type": "integer" },
+          "chargedWeight": { "type": "number" },
+          "commodityCode": { "type": "string" },
+          "specialHandling": { "type": "string", "nullable": true },
+          "shipper": { "type": "string" },
+          "consignee": { "type": "string", "nullable": true },
+          "consigneeContact": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "email": { "type": "string" },
+              "phone": { "type": "string" },
+              "address": { "type": "string" }
+            }
+          },
+          "natureOfGoods": { "type": "string" },
+          "shipmentValue": { "type": "number" },
+          "valuationCharges": { "type": "number" },
+          "awbCharges": { "type": "number" },
+          "ratePlan": { "type": "string" },
+          "productType": { "type": "string" },
+          "currency": { "type": "string" },
+          "totalCharges": { "type": "number" },
+          "attachments": { "type": "array", "items": { "type": "object" } },
+          "activityLog": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "timestamp": { "type": "string", "format": "date-time" },
+                "action": { "type": "string" },
+                "user": { "type": "string" }
+              }
+            }
+          }
+        },
+        "required": ["id", "awbNumber", "pieces", "chargedWeight", "commodityCode", "shipper", "natureOfGoods", "shipmentValue", "valuationCharges", "awbCharges", "ratePlan", "productType", "currency", "totalCharges", "attachments", "activityLog"]
+      },
+      "AirwayBillTableResponse": {
+        "type": "object",
+        "properties": {
+          "airwayBills": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/AirwayBill" }
+          }
+        }
+      },
+      "Report": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "object",
+            "properties": {
+              "startDate": { "type": "string", "format": "date" },
+              "endDate": { "type": "string", "format": "date" }
+            }
+          },
+          "totalRevenue": { "type": "number" },
+          "revenuePerKg": { "type": "number" },
+          "totalFlights": { "type": "integer" },
+          "volumeUtilization": { "type": "number" },
+          "weightUtilization": { "type": "number" },
+          "avgRevenuePerFlight": { "type": "number" },
+          "avgLoadPerFlight": { "type": "number" },
+          "lanePerformance": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "origin": { "type": "string" },
+                "destination": { "type": "string" },
+                "flights": { "type": "integer" },
+                "totalWeight": { "type": "number" },
+                "totalVolume": { "type": "number" },
+                "totalRevenue": { "type": "number" },
+                "avgWeightPerFlight": { "type": "number" },
+                "avgVolumePerFlight": { "type": "number" },
+                "avgRevenuePerFlight": { "type": "number" }
+              }
+            }
+          },
+          "bookingLeadTime": { "type": "number" },
+          "flightOnTimePercentage": { "type": "number" },
+          "delayCauses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "cause": { "type": "string" },
+                "percentage": { "type": "number" }
+              }
+            }
+          },
+          "topCommodityTypes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": { "type": "string" },
+                "count": { "type": "integer" }
+              }
+            }
+          },
+          "topShippers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "shipper": { "type": "string" },
+                "revenue": { "type": "number" }
+              }
+            }
+          },
+          "currency": { "type": "string" }
+        },
+        "required": ["period", "totalRevenue", "revenuePerKg", "totalFlights", "volumeUtilization", "weightUtilization", "avgRevenuePerFlight", "avgLoadPerFlight", "lanePerformance", "bookingLeadTime", "flightOnTimePercentage", "delayCauses", "topCommodityTypes", "topShippers", "currency"]
+      },
+      "ReportResponse": {
+        "type": "object",
+        "properties": {
+          "report": { "$ref": "#/components/schemas/Report" }
         }
       }
     }
