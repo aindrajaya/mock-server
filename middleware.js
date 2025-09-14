@@ -11,6 +11,11 @@ const API_KEY = process.env.MOCK_SERVER_API_KEY || 'mockserver-secret'
 export function middleware(request) {
   const url = request.nextUrl.clone()
 
+  // Handle CORS preflight requests
+  if (request.method === 'OPTIONS') {
+    return handleCorsPreflight()
+  }
+
   // Only protect API routes
   if (!url.pathname.startsWith('/api/')) {
     return NextResponse.next()
@@ -28,13 +33,39 @@ export function middleware(request) {
 
   if (!token || token !== API_KEY) {
     const res = NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
-    // Allow CORS preflight to proceed for OPTIONS requests (if client runs preflight)
-    res.headers.set('Access-Control-Allow-Origin', '*')
-    res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key')
+    addCorsHeaders(res)
     return res
   }
 
-  return NextResponse.next()
+  // For authenticated requests, continue and add CORS headers
+  const response = NextResponse.next()
+  addCorsHeaders(response)
+  return response
+}
+
+// Handle CORS preflight requests
+function handleCorsPreflight() {
+  const response = new NextResponse(null, { status: 200 })
+  addCorsHeaders(response)
+  return response
+}
+
+// Add CORS headers to response
+function addCorsHeaders(response) {
+  // Allow requests from any origin (adjust for production)
+  response.headers.set('Access-Control-Allow-Origin', '*')
+
+  // Allow specific methods
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+
+  // Allow specific headers
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key, Accept, Origin, User-Agent')
+
+  // Allow credentials (if needed)
+  response.headers.set('Access-Control-Allow-Credentials', 'true')
+
+  // Cache preflight response for 24 hours
+  response.headers.set('Access-Control-Max-Age', '86400')
 }
 
 export const config = {

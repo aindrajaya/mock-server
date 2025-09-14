@@ -98,8 +98,7 @@
           }
         }
       }
-    }
-    ,
+    },
     "/api/booking": {
       "post": {
   "tags": ["qr-exp-cgo-ext-booking-v1"],
