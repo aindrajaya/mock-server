@@ -1,0 +1,233 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Mock API",
+    "version": "1.0.0",
+    "description": "Mock OpenAPI spec for QR API Service"
+  },
+  "paths": {
+    "/api/status": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "Service status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/availability": {
+      "post": {
+        "summary": "Availability and rate search (mock)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvailabilityRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Availability results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+    ,
+    "/api/booking": {
+      "post": {
+        "summary": "Create booking (mock)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BookingRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BookingResponse" }
+              }
+            }
+          },
+          "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+        }
+      },
+      "delete": {
+        "summary": "Cancel booking (mock)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CancellationRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cancellation result",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CancellationResponse" } } }
+          },
+          "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "StatusResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "apiName": { "type": "string" },
+          "version": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["success", "apiName", "version", "timestamp"]
+      },
+      "AvailabilityRequest": {
+        "type": "object",
+        "properties": {
+          "origin": { "type": "string", "example": "CDG" },
+          "destination": { "type": "string", "example": "BOM" },
+          "routingPreference": {
+            "type": "object",
+            "properties": {
+              "scheduledDepartureDate": { "type": "string", "example": "2025-09-20" }
+            },
+            "required": ["scheduledDepartureDate"]
+          }
+        },
+        "required": ["origin", "destination", "routingPreference"]
+      },
+      "Rate": {
+        "type": "object",
+        "properties": {
+          "currencyCode": { "type": "string" },
+          "ratePerKilo": { "type": "number" },
+          "chargeableWeight": { "type": "number" },
+          "totalAmount": { "type": "number" }
+        },
+        "required": ["currencyCode", "ratePerKilo", "chargeableWeight", "totalAmount"]
+      },
+      "AvailabilityItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "carrier": { "type": "string" },
+          "flightNumber": { "type": "string" },
+          "origin": { "type": "string" },
+          "destination": { "type": "string" },
+          "departureDate": { "type": "string", "format": "date" },
+          "availablePieces": { "type": "integer" },
+          "availableWeight": { "type": "integer" },
+          "rate": { "$ref": "#/components/schemas/Rate" }
+        },
+        "required": ["id", "carrier", "flightNumber", "origin", "destination", "departureDate", "rate"]
+      },
+      "AvailabilityResponse": {
+        "type": "object",
+        "properties": {
+          "availabilityResponseSOs": { "type": "array", "items": { "$ref": "#/components/schemas/AvailabilityItem" } },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "total": { "type": "integer" },
+              "page": { "type": "integer" },
+              "limit": { "type": "integer" }
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string" }
+        }
+      }
+      ,
+      "BookingRequest": {
+        "type": "object",
+        "properties": {
+          "customerDetails": { "type": "object" },
+          "documentDetails": { "type": "object" },
+          "productCommodityDetails": { "type": "object" },
+          "shipmentDimensions": { "type": "array", "items": { "type": "object" } },
+          "shipmentQuantityDetails": { "type": "object" },
+          "requestRefId": { "type": "string" },
+          "requestType": { "type": "string" },
+          "flightItineraries": { "type": "array", "items": { "type": "object" } },
+          "source": { "type": "string" },
+          "callBackURL": { "type": "string" }
+        },
+        "required": ["customerDetails", "documentDetails", "productCommodityDetails", "shipmentQuantityDetails", "requestRefId", "requestType", "flightItineraries"]
+      },
+      "BookingResponse": {
+        "type": "object",
+        "properties": {
+          "shipmentReferenceNum": { "type": "string" },
+          "currentBookingStatus": { "type": "string" },
+          "bookingCaptured": { "type": "boolean" },
+          "customerDetails": { "type": "object" },
+          "documentDetails": { "type": "object" },
+          "flightItineraries": { "type": "array", "items": { "type": "object" } },
+          "productCommodityDetails": { "type": "object" },
+          "shipmentDimensions": { "type": "array", "items": { "type": "object" } },
+          "shipmentQuantityDetails": { "type": "object" },
+          "source": { "type": "string" },
+          "callBackURL": { "type": "string" },
+          "additionalDetails": { "type": "object" },
+          "rateDetails": { "type": "object" },
+          "businessErrors": { "type": "array", "items": { "type": "object" } },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CancellationRequest": {
+        "type": "object",
+        "properties": {
+          "shipmentReferenceNum": { "type": "string" },
+          "cancellationReason": { "type": "string" },
+          "customerDetails": { "type": "object" },
+          "documentDetails": { "type": "object" }
+        }
+      },
+      "CancellationResponse": {
+        "type": "object",
+        "properties": {
+          "documentDetails": { "type": "object" },
+          "cancellationRmks": { "type": "string" },
+          "cancellationStatus": { "type": "string" }
+        }
+      }
+    }
+  }
+}
