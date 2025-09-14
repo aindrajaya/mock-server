@@ -1,4 +1,4 @@
-import { generateDigitalPouches } from '../../../lib/mock-data/digital-pouch.js';
+import { generateDigitalPouches } from '@/lib/mock-data/digital-pouch.js';
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {

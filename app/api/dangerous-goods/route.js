@@ -1,4 +1,4 @@
-import { generateDangerousGoodsDeclarations } from '../../../lib/mock-data/dangerous-goods.js';
+import { generateDangerousGoodsDeclarations } from '@/lib/mock-data/dangerous-goods.js';
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {

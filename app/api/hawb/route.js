@@ -1,4 +1,4 @@
-import { generateHAWBs } from '../../../lib/mock-data/hawb.js';
+import { generateHAWBs } from '@/lib/mock-data/hawb.js';
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {

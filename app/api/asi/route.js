@@ -1,4 +1,4 @@
-import { generateASIs } from '../../../lib/mock-data/asi.js';
+import { generateASIs } from '@/lib/mock-data/asi.js';
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {

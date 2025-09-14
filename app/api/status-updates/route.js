@@ -1,4 +1,4 @@
-import { generateStatusUpdates } from '../../../lib/mock-data/status-updates.js';
+import { generateStatusUpdates } from '@/lib/mock-data/status-updates.js';
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {

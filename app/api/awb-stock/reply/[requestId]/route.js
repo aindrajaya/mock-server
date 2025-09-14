@@ -1,4 +1,4 @@
-import { generateAWBStockReply } from '../../../lib/mock-data/awb-stock.js';
+import { generateAWBStockReply } from '@/lib/mock-data/awb-stock.js';
 import { NextResponse } from 'next/server';
 
 export async function PUT(request, { params }) {

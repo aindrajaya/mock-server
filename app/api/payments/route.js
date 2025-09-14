@@ -1,4 +1,4 @@
-import { generatePayments } from '../../../lib/mock-data/payments.js';
+import { generatePayments } from '@/lib/mock-data/payments.js';
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {

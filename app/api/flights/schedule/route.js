@@ -1,4 +1,4 @@
-import { generateFlightSchedulesACS } from '../../../lib/mock-data/flight-schedules.js';
+import { generateFlightSchedulesACS } from '@/lib/mock-data/flight-schedules.js';
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {

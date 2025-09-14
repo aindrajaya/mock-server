@@ -1,4 +1,4 @@
-import { generateQuoteRequests } from '../../../lib/mock-data/quotes.js';
+import { generateQuoteRequests } from '@/lib/mock-data/quotes.js';
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {

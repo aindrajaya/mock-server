@@ -1,4 +1,4 @@
-import { generateTruckSlotRequests } from '../../../lib/mock-data/truck-slots.js';
+import { generateTruckSlotRequests } from '@/lib/mock-data/truck-slots.js';
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {

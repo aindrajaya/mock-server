@@ -1,4 +1,4 @@
-import { generatePLACIRiskAssessment } from '../../../lib/mock-data/placi.js';
+import { generatePLACIRiskAssessment } from '@/lib/mock-data/placi.js';
 import { NextResponse } from 'next/server';
 
 export async function GET(request, { params }) {

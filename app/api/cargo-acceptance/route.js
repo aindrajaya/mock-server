@@ -1,4 +1,4 @@
-import { generateCargoAcceptances } from '../../../lib/mock-data/cargo-acceptance.js';
+import { generateCargoAcceptances } from '@/lib/mock-data/cargo-acceptance.js';
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {

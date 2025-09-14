@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { generateBookingACS } from '../../../lib/mock-data/bookings.js'
+import { generateBookingACS } from '@/lib/mock-data/bookings.js'
 
 // POST /api/bookings - Create ACS booking
 export async function POST(request) {

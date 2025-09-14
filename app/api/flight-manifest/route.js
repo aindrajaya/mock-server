@@ -1,4 +1,4 @@
-import { generateFlightManifests } from '../../../lib/mock-data/flight-manifest.js';
+import { generateFlightManifests } from '@/lib/mock-data/flight-manifest.js';
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {

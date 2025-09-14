@@ -1,4 +1,4 @@
-import { generateFlightCapacity } from '../../../lib/mock-data/flight-schedules.js';
+import { generateFlightCapacity } from '@/lib/mock-data/flight-schedules.js';
 import { NextResponse } from 'next/server';
 
 export async function GET(request, { params }) {

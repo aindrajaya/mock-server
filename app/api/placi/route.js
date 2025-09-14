@@ -1,4 +1,4 @@
-import { generatePLACIs } from '../../../lib/mock-data/placi.js';
+import { generatePLACIs } from '@/lib/mock-data/placi.js';
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {
