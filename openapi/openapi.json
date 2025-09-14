@@ -5,9 +5,27 @@
     "version": "1.0.0",
     "description": "Mock OpenAPI spec for QR API Service"
   },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    },
+    {
+      "url": "https://mock-server-hazel-tau.vercel.app",
+      "description": "Production server"
+    }
+  ],
+  "tags": [
+    { "name": "qr-exp-cgo-ext-availability-v1", "description": "Availability service" },
+    { "name": "qr-exp-cgo-ext-booking-v1", "description": "Booking service" },
+    { "name": "qr-exp-cgo-ext-flight-schedules-v1", "description": "Flight schedules service" },
+    { "name": "qr-exp-cgo-shipments-v1", "description": "Shipments service" },
+    { "name": "qr-exp-cgo-stock-v1", "description": "Stock service" }
+  ],
   "paths": {
     "/api/status": {
       "get": {
+  "tags": ["qr-exp-cgo-ext-availability-v1"],
         "summary": "Health check",
         "responses": {
           "200": {
@@ -25,6 +43,7 @@
     },
     "/api/availability": {
       "post": {
+  "tags": ["qr-exp-cgo-ext-availability-v1"],
         "summary": "Availability and rate search (mock)",
         "requestBody": {
           "required": true,
@@ -61,6 +80,7 @@
     ,
     "/api/booking": {
       "post": {
+  "tags": ["qr-exp-cgo-ext-booking-v1"],
         "summary": "Create booking (mock)",
         "requestBody": {
           "required": true,
@@ -83,6 +103,7 @@
         }
       },
       "delete": {
+  "tags": ["qr-exp-cgo-ext-booking-v1"],
         "summary": "Cancel booking (mock)",
         "requestBody": {
           "required": true,
@@ -100,6 +121,65 @@
           "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
         }
       }
+    }
+    ,
+    "/api/flight-schedules/daily": {
+      "post": {
+  "tags": ["qr-exp-cgo-ext-flight-schedules-v1"],
+        "summary": "Get daily flight schedules",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FlightSchedulesDailyRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Daily schedules",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FlightSchedulesDailyResponse" } } }
+          },
+          "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+        }
+      }
+    },
+    "/api/flight-schedules/weekly": {
+      "post": {
+  "tags": ["qr-exp-cgo-ext-flight-schedules-v1"],
+        "summary": "Get weekly flight schedules",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FlightSchedulesWeeklyRequest" } } }
+        },
+        "responses": {
+          "200": { "description": "Weekly routes", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FlightSchedulesWeeklyResponse" } } } },
+          "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+        }
+      }
+    },
+    "/api/shipment/fwb-capture": {
+      "post": {
+  "tags": ["qr-exp-cgo-shipments-v1"],
+        "summary": "FWB capture",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FwbCaptureRequest" } } } },
+        "responses": { "200": { "description": "FWB capture result", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FwbCaptureResponse" } } } },
+        "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } } }
+      }
+    },
+    "/api/shipment/track": {
+      "post": {
+  "tags": ["qr-exp-cgo-shipments-v1"],
+        "summary": "Track shipment",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ShipmentTrackRequest" } } } },
+        "responses": { "200": { "description": "Tracking result", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ShipmentTrackResponse" } } } },
+        "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } } }
+      }
+    },
+    "/api/stock": {
+      "post": {
+  "tags": ["qr-exp-cgo-stock-v1"],
+        "summary": "Get next available stock",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StockRequest" } } } },
+        "responses": { "200": { "description": "Stock response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StockResponse" } } } },
+        "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }}
+      } 
     }
   },
   "components": {
@@ -226,6 +306,128 @@
           "documentDetails": { "type": "object" },
           "cancellationRmks": { "type": "string" },
           "cancellationStatus": { "type": "string" }
+        }
+      },
+      "FlightSchedulesDailyRequest": {
+        "type": "object",
+        "properties": {
+          "origin": { "type": "string" },
+          "destination": { "type": "string" },
+          "date": { "type": "string", "format": "date" },
+          "filters": { "type": "object" }
+        },
+        "required": ["origin", "destination", "date"]
+      },
+      "FlightSchedulesDailyResponse": {
+        "type": "object",
+        "properties": {
+          "schedules": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "carrier": { "type": "string" },
+                "flightNumber": { "type": "string" },
+                "origin": { "type": "string" },
+                "destination": { "type": "string" },
+                "departureTime": { "type": "string" },
+                "arrivalTime": { "type": "string" },
+                "capacity": { "type": "object", "properties": { "availablePieces": { "type": "integer" }, "availableWeight": { "type": "number" } } }
+              }
+            }
+          }
+        }
+      },
+      "FlightSchedulesWeeklyRequest": {
+        "type": "object",
+        "properties": {
+          "origin": { "type": "string" },
+          "destination": { "type": "string" },
+          "weekStartDate": { "type": "string", "format": "date" }
+        },
+        "required": ["origin", "destination", "weekStartDate"]
+      },
+      "FlightSchedulesWeeklyResponse": {
+        "type": "object",
+        "properties": {
+          "routes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "carrier": { "type": "string" },
+                "flightNumber": { "type": "string" },
+                "daysOfWeek": { "type": "array", "items": { "type": "string" } },
+                "origin": { "type": "string" },
+                "destination": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "FwbCaptureRequest": {
+        "type": "object",
+        "properties": {
+          "awbPrefix": { "type": "string" },
+          "awbNumber": { "type": "string" },
+          "shipment": { "type": "object" }
+        },
+        "required": ["awbPrefix", "awbNumber"]
+      },
+      "FwbCaptureResponse": {
+        "type": "object",
+        "properties": {
+          "captureStatus": { "type": "string" },
+          "awb": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      },
+      "ShipmentTrackRequest": {
+        "type": "object",
+        "properties": {
+          "cargoTrackingRequestSOs": { "type": "array", "items": { "type": "object" } }
+        },
+        "required": ["cargoTrackingRequestSOs"]
+      },
+      "ShipmentTrackResponse": {
+        "type": "object",
+        "properties": {
+          "trackingResults": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "awb": { "type": "string" },
+                "status": { "type": "string" },
+                "events": { "type": "array", "items": { "type": "object" } }
+              }
+            }
+          }
+        }
+      },
+      "StockRequest": {
+        "type": "object",
+        "properties": {
+          "customerDetails": { "type": "object" },
+          "bookingRequestedCity": { "type": "string" }
+        },
+        "required": ["customerDetails", "bookingRequestedCity"]
+      },
+      "StockResponse": {
+        "type": "object",
+        "properties": {
+          "stockAssignments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "nextAvailableCity": { "type": "string" },
+                "flightNumber": { "type": "string" },
+                "availablePieces": { "type": "integer" },
+                "availableWeight": { "type": "number" }
+              }
+            }
+          }
         }
       }
     }
