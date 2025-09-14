@@ -1,6 +1,6 @@
 # Mock Server — Availability & Booking APIs
 
-This repository provides simple mock implementations for Availability and Booking Experience APIs.
+This repository provides simple mock implementations for several cargo-related APIs. It's a Next.js app (app router) with mocked responses under `app/api/*`.
 
 ## Available endpoints
 
@@ -8,34 +8,286 @@ This repository provides simple mock implementations for Availability and Bookin
 - `POST /api/availability` — availability & rate search (mocked)
 - `POST /api/booking` — create booking (mocked)
 - `DELETE /api/booking` — cancel booking (mocked)
+- `POST /api/flight-schedules/daily` — daily flight schedules
+- `POST /api/flight-schedules/weekly` — weekly flight schedules
+- `POST /api/shipment/fwb-capture` — FWB capture
+# Mock Server — Availability & Booking APIs
 
-## Run locally
+This repository provides simple mock implementations for several cargo-related APIs. It's a Next.js app (app router) with mocked responses under `app/api/*`.
 
-1. Install dependencies (if not already):
+## Available endpoints
+
+- `GET /api/status` — health check
+- `POST /api/availability` — availability & rate search (mocked)
+- `POST /api/booking` — create booking (mocked)
+- `DELETE /api/booking` — cancel booking (mocked)
+- `POST /api/flight-schedules/daily` — daily flight schedules
+- `POST /api/flight-schedules/weekly` — weekly flight schedules
+- `POST /api/shipment/fwb-capture` — FWB capture
+- `POST /api/shipment/track` — shipment tracking
+- `POST /api/stock` — stock assignment
+- `GET /api/flight-table` — get mock flight table
+- `GET /api/airway-bill-table` — get mock airway bill table
+- `GET /api/report` — get mock report
+
+### ACS Cargo APIs
+
+#### AWB Stock Management
+- `POST /api/awb-stock/request` — Request AWB stock allocation
+- `PUT /api/awb-stock/reply/{requestId}` — Reply to AWB stock request
+
+#### Flight Schedules & Capacity
+- `POST /api/flights/schedule` — Submit flight schedule
+- `GET /api/flights/{flightNumber}/capacity` — Get flight capacity information
+
+#### Quotations & Bookings
+- `POST /api/quotes/request` — Request quotation
+- `POST /api/bookings` — Create booking
+
+#### Advanced Shipment Information (ASI)
+- `POST /api/asi` — Send Advanced Shipment Information
+
+#### Truck Slot Management
+- `POST /api/truck-slots/request` — Request truck slot
+
+#### HAWB/MAWB Management
+- `POST /api/hawb` — Create House Air Waybill
+
+#### Dangerous Goods
+- `POST /api/dangerous-goods` — Submit Dangerous Goods Declaration (e-DGD)
+
+#### Cargo Acceptance
+- `POST /api/cargo-acceptance` — Submit cargo acceptance request
+
+#### PLACI Management
+- `POST /api/placi` — Submit PLACI (Pre-Loading Cargo Information)
+- `GET /api/placi/{placiId}/risk-assessment` — Get PLACI risk assessment
+
+#### Flight Manifest
+- `POST /api/flight-manifest` — Submit flight manifest
+
+#### Status Updates
+- `POST /api/status-updates` — Send status update (FSU - Freight Status Update)
+
+#### Payment Processing
+- `POST /api/payments` — Process payment
+
+#### Digital Pouch
+- `POST /api/digital-pouch` — Create digital document pouch
+
+## API Documentation
+
+Complete API documentation is available in OpenAPI 3.0.3 format at `openapi/openapi.json`. This includes detailed request/response schemas, authentication requirements, and example payloads for all endpoints.
+
+## Authentication
+
+All `/api/*` endpoints are protected by a simple API key. Provide the key using either:
+
+- Authorization header: `Authorization: Bearer <API_KEY>`
+- x-api-key header: `x-api-key: <API_KEY>`
+
+Default token (development): `mockserver-secret`
+
+Example curl (replace <API_KEY> with your token):
 
 ```bash
-npm install
+curl -X POST http://localhost:3000/api/flight-schedules/weekly \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer mockserver-secret" \
+  -d '{ "origin": "CDG", "destination": "DOH", "weekStartDate": "2025-09-20" }'
 ```
-
-2. Start the Next.js dev server:
-
-```bash
-npm run dev
-```
-
-The app will be available at `http://localhost:3000` by default.
 
 ## Examples
 
-Use curl, httpie, Postman, or your preferred HTTP client.
+Use curl, httpie, Postman, or any HTTP client. All requests to `/api/*` must include the API key (see Authentication).
+
+### GET /api/flight-table
+
+Returns a list of mock flights:
+
+```json
+{
+  "flights": [
+    {
+      "id": 1,
+      "flight": "QR123",
+      "date": "2025-09-20",
+      "origin": "CDG",
+      "departureTime": "10:00",
+      "destination": "DOH",
+      "arrivalTime": "16:00",
+      "weight": 120000,
+      "volume": 500,
+      "status": "Scheduled",
+      "baseRate": 3.5,
+      "outputRate": 3.8,
+      "tailNumber": "AP-XYZ",
+      "manufacturer": "Boeing",
+      "aircraftType": "Boeing 777-300ER",
+      "maxWeight": 160000,
+      "maxVolume": 650
+    },
+    // ...more flights
+  ]
+}
+```
+
+### GET /api/airway-bill-table
+
+Returns a list of mock airway bills:
+
+```json
+{
+  "airwayBills": [
+    {
+      "id": 1,
+      "awbNumber": "123-12345678",
+      "pieces": 10,
+      "chargedWeight": 500,
+      "commodityCode": "PER",
+      "specialHandling": "ICE",
+      "shipper": "Global Logistics Ltd",
+      "consignee": "Tech Innovations Inc",
+      "natureOfGoods": "Electronic components",
+      "shipmentValue": 50000,
+      "valuationCharges": 2.5,
+      "awbCharges": 50,
+      "ratePlan": "Standard Rates",
+      "productType": "Express",
+      "currency": "USD",
+      "totalCharges": 2552.5
+    },
+    // ...more airway bills
+  ]
+}
+```
+
+### GET /api/report
+
+Returns a mock report summary:
+
+```json
+{
+  "report": {
+    "period": {
+      "startDate": "2025-09-15",
+      "endDate": "2025-10-15"
+    },
+    "totalRevenue": 123456.78,
+    "revenuePerKg": 2.45,
+    "totalFlights": 50,
+    "volumeUtilization": 75.2,
+    "weightUtilization": 82.1,
+    "avgRevenuePerFlight": 2469.13,
+    "avgLoadPerFlight": 500.2,
+    "lanePerformance": [
+      {
+        "origin": "CDG",
+        "destination": "DOH",
+        "flights": 5,
+        "totalWeight": 6000,
+        "totalVolume": 2500,
+        "totalRevenue": 15000
+      }
+      // ...more lanes
+    ],
+    "bookingLeadTime": 3.5,
+    "flightOnTimePercentage": 92.3,
+    "delayCauses": [
+      { "cause": "Weather", "percentage": 40 },
+      { "cause": "Technical", "percentage": 25 }
+      // ...more causes
+    ],
+    "topCommodityTypes": [
+      { "code": "PER", "count": 20 }
+      // ...more commodities
+    ],
+    "topShippers": [
+      { "shipper": "Global Logistics Ltd", "revenue": 20000 }
+      // ...more shippers
+    ],
+    "currency": "USD"
+  }
+}
+```
+# Mock Server — Availability & Booking APIs
+
+This repository provides simple mock implementations for several cargo-related APIs. It's a Next.js app (app router) with mocked responses under `app/api/*`.
+
+## Available endpoints
+
+- `GET /api/status` — health check
+- `POST /api/availability` — availability & rate search (mocked)
+- `POST /api/booking` — create booking (mocked)
+- `DELETE /api/booking` — cancel booking (mocked)
+- `POST /api/flight-schedules/daily` — daily flight schedules
+- `POST /api/flight-schedules/weekly` — weekly flight schedules
+- `POST /api/shipment/fwb-capture` — FWB capture
+- `POST /api/shipment/track` — shipment tracking
+- `POST /api/stock` — stock assignment
+
+## Authentication
+
+All `/api/*` endpoints are protected by a simple API key. Provide the key using either:
+
+- Authorization header: `Authorization: Bearer <API_KEY>`
+- x-api-key header: `x-api-key: <API_KEY>`
+
+Default token (development): `mockserver-secret`
+
+Example curl (replace <API_KEY> with your token):
+
+```bash
+curl -X POST http://localhost:3000/api/flight-schedules/weekly \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer mockserver-secret" \
+  -d '{ "origin": "CDG", "destination": "DOH", "weekStartDate": "2025-09-20" }'
+```
+
+## Examples
+
+Use curl, httpie, Postman, or any HTTP client. All requests to `/api/*` must include the API key (see Authentication).
+# Mock Server — Availability & Booking APIs
+
+This repository provides simple mock implementations for several cargo-related APIs. It's a Next.js app (app router) with mocked responses under `app/api/*`.
+
+## Available endpoints
+
+- `GET /api/status` — health check
+- `POST /api/availability` — availability & rate search (mocked)
+- `POST /api/booking` — create booking (mocked)
+- `DELETE /api/booking` — cancel booking (mocked)
+- `POST /api/flight-schedules/daily` — daily flight schedules
+- `POST /api/flight-schedules/weekly` — weekly flight schedules
+- `POST /api/shipment/fwb-capture` — FWB capture
+- `POST /api/shipment/track` — shipment tracking
+- `POST /api/stock` — stock assignment
+
+## Authentication
+
+All `/api/*` endpoints are protected by a simple API key. Provide the key using either:
+
+- Authorization header: `Authorization: Bearer <API_KEY>`
+- x-api-key header: `x-api-key: <API_KEY>`
+
+Default token (development): `mockserver-secret`
+
+Example curl (replace <API_KEY> with your token):
+
+```bash
+curl -X POST http://localhost:3000/api/flight-schedules/weekly \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer mockserver-secret" \
+  -d '{ "origin": "CDG", "destination": "DOH", "weekStartDate": "2025-09-20" }'
+```
+
+## Examples
+
+Use curl, httpie, Postman, or any HTTP client. All requests to `/api/*` must include the API key (see Authentication).
 
 1) Health check
 
-Request:
-
-```bash
-curl http://localhost:3000/api/status
-```
+GET /api/status
 
 Response (example):
 
@@ -48,13 +300,9 @@ Response (example):
 }
 ```
 
-2) Availability search
+2) Availability search — POST /api/availability
 
-Endpoint: `POST /api/availability`
-
-Request body (inline JSON):
-
-JSON body:
+Request JSON:
 
 ```json
 {
@@ -64,36 +312,9 @@ JSON body:
 }
 ```
 
-Response (example):
+3) Create booking — POST /api/booking
 
-```json
-{
-  "availabilityResponseSOs": [
-    {
-      "id": 1,
-      "carrier": "QR",
-      "flightNumber": "QR123",
-      "origin": "CDG",
-      "destination": "BOM",
-      "departureDate": "2025-09-20",
-      "availablePieces": 5,
-      "availableWeight": 1200,
-      "rate": { "currencyCode": "USD", "ratePerKilo": 3.5, "chargeableWeight": 100, "totalAmount": 350 }
-    }
-  ],
-  "pagination": { "total": 1, "page": 1, "limit": 1 }
-}
-```
-
-3) Create booking
-
-Endpoint: `POST /api/booking`
-
-Minimal required fields (inferred from spec): `customerDetails`, `documentDetails`, `productCommodityDetails`, `shipmentQuantityDetails`, `requestRefId`, `requestType`, `flightItineraries`.
-
-Request example (inline JSON):
-
-JSON body:
+Request JSON (minimal example):
 
 ```json
 {
@@ -107,90 +328,74 @@ JSON body:
 }
 ```
 
-Response (example):
+4) Cancel booking — DELETE /api/booking
 
-```json
-{
-  "shipmentReferenceNum": "2630058",
-  "currentBookingStatus": "Queued for Manual Action",
-  "bookingCaptured": true,
-  "customerDetails": { /* echoed */ },
-  "documentDetails": { /* echoed */ },
-  "flightItineraries": [ /* echoed */ ],
-  "createdAt": "2025-09-14T12:00:00.000Z"
-}
-```
-
-4) Cancel booking
-
-Endpoint: `DELETE /api/booking`
-
-Request body must include at least `shipmentReferenceNum` or `documentDetails`.
-
-JSON body:
+Request JSON:
 
 ```json
 { "shipmentReferenceNum": "2630058" }
 ```
 
-Response (example):
+5) Flight schedules (daily) — POST /api/flight-schedules/daily
+
+Request JSON:
 
 ```json
-{
-  "documentDetails": null,
-  "cancellationRmks": "Booking cancelled Successfully",
-  "cancellationStatus": "Cancelled"
-}
+{ "origin": "CDG", "destination": "DOH", "date": "2025-09-20" }
 ```
 
-## Notes & next steps
+6) Flight schedules (weekly) — POST /api/flight-schedules/weekly
 
-- The mock endpoints implement minimal validation. If you need strict OpenAPI schema validation, I can add `ajv` and wire the `booking-api.json` / `openapi` schema to validate requests and return structured errors.
-- If you want the OpenAPI specs served or a Swagger UI, I can add a static route or integrate `swagger-ui-express` for local testing.
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
-## How to test the APIs (exact commands)
-
-1) Start the dev server (PowerShell):
-
-```powershell
-npm install; npm run dev
-```
-
-By default the mock server runs at http://localhost:3000
-
-2) Health check (GET)
-
-curl (PowerShell / cmd):
-
-```powershell
-curl http://localhost:3000/api/status
-```
-
-3) Availability search (POST)
-
-Minimal request body (save as availability.json):
+Request JSON:
 
 ```json
-{
-  "origin": "CDG",
-  "destination": "BOM",
-  "routingPreference": { "scheduledDepartureDate": "2025-09-20" }
-}
+{ "origin": "CDG", "destination": "DOH", "weekStartDate": "2025-09-20" }
 ```
 
-curl (PowerShell):
+7) FWB capture — POST /api/shipment/fwb-capture
 
-```powershell
-curl -X POST http://localhost:3000/api/availability -H "Content-Type: application/json" -d (Get-Content -Raw .\availability.json)
-```
-
-4) Create booking (POST)
-
-Minimal request body (save as booking.json):
+Request JSON:
 
 ```json
-{
+{ "awbPrefix": "157", "awbNumber": "12345678", "origin": "DOH", "destination": "LHR" }
+```
+
+8) Shipment track — POST /api/shipment/track
+
+Request JSON:
+
+```json
+{ "cargoTrackingRequestSOs": [ { "documentType": "MAWB", "documentPrefix": "157", "documentNumber": "12345678" } ] }
+```
+
+9) Stock — POST /api/stock
+
+Request JSON:
+
+```json
+{ "customerDetails": { "agentCassCode": "9900", "agentIataCode": "6580121" }, "bookingRequestedCity": "DOH" }
+```
+
+Notes:
+
+- The examples above are JSON-only. Use your preferred client to POST the JSON bodies. If you use curl on Linux/macOS you can send a file with `-d @file.json`.
+- If you prefer httpie or Postman examples I can add them.
+
+## Getting Started
+
+First, install dependencies and run the development server:
+
+```bash
+npm install
+npm run dev
+```
+
+Open http://localhost:3000 in your browser to explore the mock endpoints.
+
+## Learn More
+
+See the Next.js docs for app-router details and deployment guidance.
+
   "customerDetails": { "agentCassCode": "7515", "agentIataCode": "2045131" },
   "documentDetails": { "airWaybillIssuePlace": "PAR", "airWaybillNumber": "1234567", "airWaybillorigin": "PAR", "airWaybilldestination": "MCT", "airlinePrefix": 157, "documentType": "MAWB", "airWaybillCurrency": "EUR" },
   "productCommodityDetails": { "productCode": "GCR", "commodityCode": "9999" },
@@ -201,44 +406,53 @@ Minimal request body (save as booking.json):
 }
 ```
 
-curl (PowerShell):
+4) Cancel booking — DELETE /api/booking
 
-```powershell
-curl -X POST http://localhost:3000/api/booking -H "Content-Type: application/json" -d (Get-Content -Raw .\booking.json)
-```
-
-3) Create booking (POST)
-
-Minimal required fields (inferred from spec): `customerDetails`, `documentDetails`, `productCommodityDetails`, `shipmentQuantityDetails`, `requestRefId`, `requestType`, `flightItineraries`.
-
-Request example (inline JSON):
-
-JSON body:
+Request JSON:
 
 ```json
-{
-  "customerDetails": { "agentCassCode": "7515", "agentIataCode": "2045131" },
-  "documentDetails": { "airWaybillIssuePlace": "PAR", "airWaybillNumber": "1234567", "airWaybillorigin": "PAR", "airWaybilldestination": "MCT", "airlinePrefix": 157, "documentType": "MAWB", "airWaybillCurrency": "EUR" },
-  "productCommodityDetails": { "productCode": "GCR", "commodityCode": "9999" },
-  "shipmentQuantityDetails": { "chargeableWeight": 30, "chargeableWeightUnit": "Kg", "totalPieces": 1, "totalVolume": 0.064, "totalWeight": 30, "volumeUnit": "MC", "weightUnit": "Kg" },
-  "requestRefId": "1550677",
-  "requestType": "1",
-  "flightItineraries": [ { "carrierCode": "QR", "carrierNumber": "3500", "scheduledDepartureDate": "2025-09-20", "segmentOfDeparture": "PAR", "segmentOfArrival": "DOH" } ]
-}
+{ "shipmentReferenceNum": "2630058" }
 ```
 
-Response (example):
+5) Flight schedules (daily) — POST /api/flight-schedules/daily
+
+Request JSON:
 
 ```json
-{
-  "shipmentReferenceNum": "2630058",
-  "currentBookingStatus": "Queued for Manual Action",
-  "bookingCaptured": true,
-  "customerDetails": { /* echoed */ },
-  "documentDetails": { /* echoed */ },
-  "flightItineraries": [ /* echoed */ ],
-  "createdAt": "2025-09-14T12:00:00.000Z"
-}
+{ "origin": "CDG", "destination": "DOH", "date": "2025-09-20" }
+```
+
+6) Flight schedules (weekly) — POST /api/flight-schedules/weekly
+
+Request JSON:
+
+```json
+{ "origin": "CDG", "destination": "DOH", "weekStartDate": "2025-09-20" }
+```
+
+7) FWB capture — POST /api/shipment/fwb-capture
+
+Request JSON:
+
+```json
+{ "awbPrefix": "157", "awbNumber": "12345678", "origin": "DOH", "destination": "LHR" }
+```
+
+8) Shipment track — POST /api/shipment/track
+
+Request JSON:
+
+```json
+{ "cargoTrackingRequestSOs": [ { "documentType": "MAWB", "documentPrefix": "157", "documentNumber": "12345678" } ] }
+```
+
+9) Stock — POST /api/stock
+
+Request JSON:
+
+```json
+{ "customerDetails": { "agentCassCode": "9900", "agentIataCode": "6580121" }, "bookingRequestedCity": "DOH" }
+```
 ```
 
 ```json
